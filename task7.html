@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="productCatalogApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .catalog-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        select {
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        var app = angular.module('productCatalogApp', []);
+
+        app.controller('CatalogController', function ($scope) {
+            $scope.products = [
+                { name: 'Product 1', category: 'Electronics', features: ['Bluetooth', 'Wireless', 'HD Display'] },
+                { name: 'Product 2', category: 'Clothing', features: ['Cotton', 'Casual', 'Slim Fit'] },
+                { name: 'Product 3', category: 'Electronics', features: ['4K Display', 'High Performance'] },
+                // Add more products as needed
+            ];
+
+            $scope.categories = [...new Set($scope.products.map(product => product.category))];
+            $scope.selectedCategory = '';
+
+            $scope.filterProducts = function () {
+                $scope.filteredProducts = $scope.products.filter(product =>
+                    (!$scope.selectedCategory || product.category === $scope.selectedCategory)
+                );
+            };
+
+            $scope.filterProducts(); // Initial filter
+
+        });
+    </script>
+</head>
+<body ng-controller="CatalogController">
+    <div class="catalog-container">
+        <h1>Product Catalog</h1>
+        <label for="categoryFilter">Filter by Category:</label>
+        <select id="categoryFilter" ng-model="selectedCategory" ng-change="filterProducts()">
+            <option value="">All Categories</option>
+            <option ng-repeat="category in categories" value="{{category}}">{{category}}</option>
+        </select>
+        <div ng-repeat="product in filteredProducts">
+            <div class="product">
+                <h2>{{ product.name }}</h2>
+                <p>Category: {{ product.category }}</p>
+                <p>Features: {{ product.features.join(', ') }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
