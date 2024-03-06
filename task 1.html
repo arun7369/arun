@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="TaskListApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Task List Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .task-manager {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+        }
+
+        button.delete {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body ng-controller="TaskListController">
+
+    <div class="task-manager">
+        <input type="text" ng-model="newTask" placeholder="Add a new task...">
+        <ul>
+            <li ng-repeat="task in tasks">
+                <span>{{ task }}</span>
+                <button class="delete" ng-click="deleteTask($index)">Delete</button>
+            </li>
+        </ul>
+        <button ng-click="addTask()">Add Task</button>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        angular.module('TaskListApp', [])
+            .controller('TaskListController', function ($scope) {
+                $scope.tasks = [];
+
+                $scope.addTask = function () {
+                    if ($scope.newTask) {
+                        $scope.tasks.push($scope.newTask);
+                        $scope.newTask = '';
+                    }
+                };
+
+                $scope.deleteTask = function (index) {
+                    $scope.tasks.splice(index, 1);
+                };
+            });
+    </script>
+</body>
+</html>
