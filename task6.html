@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="quizApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        var app = angular.module('quizApp', []);
+
+        app.controller('QuizController', function ($scope) {
+            $scope.quiz = {
+                title: 'Angular Quiz',
+                questions: [
+                    {
+                        text: 'What is AngularJS?',
+                        options: ['A JavaScript library', 'A server-side language', 'A front-end framework'],
+                        correctAnswer: 'A front-end framework'
+                    },
+                    {
+                        text: 'What does MVC stand for in AngularJS?',
+                        options: ['Model View Component', 'Model View Controller', 'Model Visual Controller'],
+                        correctAnswer: 'Model View Controller'
+                    },
+                    // Add more questions as needed
+                ],
+                currentQuestionIndex: 0,
+                currentQuestion: null,
+                userAnswer: null,
+                score: 0,
+                finished: false,
+                loadQuestion: function () {
+                    $scope.quiz.currentQuestion = $scope.quiz.questions[$scope.quiz.currentQuestionIndex];
+                },
+                checkAnswer: function () {
+                    if ($scope.quiz.userAnswer === $scope.quiz.currentQuestion.correctAnswer) {
+                        $scope.quiz.score++;
+                    }
+                    $scope.quiz.currentQuestionIndex++;
+                    if ($scope.quiz.currentQuestionIndex < $scope.quiz.questions.length) {
+                        $scope.quiz.loadQuestion();
+                    } else {
+                        $scope.quiz.finished = true;
+                    }
+                },
+                restartQuiz: function () {
+                    $scope.quiz.currentQuestionIndex = 0;
+                    $scope.quiz.score = 0;
+                    $scope.quiz.finished = false;
+                    $scope.quiz.loadQuestion();
+                }
+            };
+
+            $scope.quiz.loadQuestion();
+        });
+    </script>
+</head>
+<body ng-controller="QuizController">
+    <div class="quiz-container">
+        <h1>{{ quiz.title }}</h1>
+        <div ng-show="!quiz.finished">
+            <div ng-show="quiz.currentQuestion">
+                <p>{{ quiz.currentQuestion.text }}</p>
+                <ul>
+                    <li ng-repeat="option in quiz.currentQuestion.options">
+                        <label>
+                            <input type="radio" ng-model="quiz.userAnswer" ng-value="option">
+                            {{ option }}
+                        </label>
+                    </li>
+                </ul>
+                <button ng-click="checkAnswer()">Next</button>
+            </div>
+            <div ng-hide="quiz.currentQuestion">
+                <p>Your score: {{ quiz.score }}/{{ quiz.questions.length }}</p>
+                <button ng-click="restartQuiz()">Restart</button>
+            </div>
+        </div>
+        <div ng-show="quiz.finished">
+            <p>Congratulations! You completed the quiz.</p>
+            <p>Your final score: {{ quiz.score }}/{{ quiz.questions.length }}</p>
+        </div>
+    </div>
+</body>
+</html>
