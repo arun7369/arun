@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="chatApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .chat-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        .message-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js"></script>
+    <script>
+        var app = angular.module('chatApp', []);
+
+        app.controller('ChatController', function ($scope, $timeout) {
+            // Replace with your Firebase config
+            var firebaseConfig = {
+                apiKey: 'YOUR_API_KEY',
+                authDomain: 'YOUR_AUTH_DOMAIN',
+                databaseURL: 'YOUR_DATABASE_URL',
+                projectId: 'YOUR_PROJECT_ID',
+                storageBucket: 'YOUR_STORAGE_BUCKET',
+                messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+                appId: 'YOUR_APP_ID'
+            };
+
+            firebase.initializeApp(firebaseConfig);
+            var database = firebase.database();
+
+            $scope.messages = [];
+            $scope.newMessage = '';
+
+            var messagesRef = database.ref('messages');
+
+            messagesRef.on('child_added', function (snapshot) {
+                $timeout(function () {
+                    var message = snapshot.val();
+                    $scope.messages.push(message);
+                });
+            });
+
+            $scope.sendMessage = function () {
+                if ($scope.newMessage.trim() !== '') {
+                    var message = {
+                        text: $scope.newMessage.trim(),
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+                    messagesRef.push(message);
+                    $scope.newMessage = '';
+                }
+            };
+        });
+    </script>
+</head>
+<body ng-controller="ChatController">
+    <div class="chat-container">
+        <h1>Real-time Chat</h1>
+        <div class="message-container">
+            <div class="message" ng-repeat="message in messages">
+                {{ message.text }}
+            </div>
+        </div>
+        <input type="text" ng-model="newMessage" placeholder="Type your message">
+        <button ng-click="sendMessage()">Send</button>
+    </div>
+</body>
+</html>
